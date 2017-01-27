@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <stdlib.h>
 #include "stb_image_write.h"
-#include "bkpmaterial.h"
+#include "material.h"
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
