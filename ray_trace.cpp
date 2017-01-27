@@ -12,9 +12,9 @@
 #include "hitable.h"
 #include "hitable_list.h"
 #include "camera.h"
-#include "lambertian.h"
-#include "metal.h"
-#include "dielectric.h"
+//#include "lambertian.h"
+//#include "metal.h"
+//#include "dielectric.h"
 
 #define MAX_FLOAT 200.0
 
@@ -26,13 +26,13 @@ struct rgba8 {
     rgba8(unsigned char rr, unsigned char gg, unsigned char bb, unsigned char aa)
     : r(rr),g(gg),b(bb),a(aa) { }
     rgba8(vec3 v){
-        *this = rgba8((unsigned char)(255.99 * v[0]), (unsigned char)(255.99 * v[1]), (unsigned char)(255.99 * v[1]), 255);
+        *this = rgba8((unsigned char)(255.99 * v[0]), (unsigned char)(255.99 * v[1]), (unsigned char)(255.99 * v[2]), 255);
     }
 };
 
 vec3 colour(const ray& r, hitable* world, int depth){
     hit_record rec;
-    if(world->hit(r, 0.0, MAX_FLOAT, rec)){
+    if(world->hit(r, 0.001, MAX_FLOAT, rec)){
         vec3 attenuation;
         ray scattered;
         if(depth < 50 and rec.mat_ptr->scatter(r, rec, attenuation, scattered)){
@@ -57,15 +57,14 @@ int main(){
     hitable *list[4];
 
     list[3] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.1,0.1,0.8)));
-    list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.01,0.01,0.01)));
+    list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.1,0.8,0.1)));
     list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.6,0.2,0.2), 0.0));
     list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
     hitable *world = new hitable_list(list, 4);
 
-    camera cam(vec3(-2,2,1), vec3(0,0,-1), vec3(0,1,0), 90, float(nx) / ny);
+    camera cam(vec3(-1,0.5,2), vec3(0,0,-1), vec3(0,1,0), 90, float(nx) / ny);
     int i=0;
 //    #pragma omp parallel for
-//    for some reason screws up the image
     for(int j = ny-1; j >= 0; j--){
         for(i=0; i < nx; i++){
             vec3 col(0,0,0);
