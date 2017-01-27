@@ -12,9 +12,9 @@
 #include "hitable.h"
 #include "hitable_list.h"
 #include "camera.h"
-//#include "lambertian.h"
-//#include "metal.h"
-//#include "dielectric.h"
+#include "lambertian.h"
+#include "metal.h"
+#include "dielectric.h"
 
 #define MAX_FLOAT 200.0
 
@@ -62,7 +62,7 @@ int main(){
     list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
     hitable *world = new hitable_list(list, 4);
 
-    camera cam(vec3(-1,0.5,2), vec3(0,0,-1), vec3(0,1,0), 90, float(nx) / ny);
+    camera cam(vec3(-1,0.5,1.5), vec3(0,0,-1), vec3(0,1,0), 90, float(nx) / ny);
     int i=0;
 //    #pragma omp parallel for
     for(int j = ny-1; j >= 0; j--){
