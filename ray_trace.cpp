@@ -5,16 +5,13 @@
 #include <cstdio>
 #include <stdlib.h>
 #include "stb_image_write.h"
-#include "material.h"
+#include "bkpmaterial.h"
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
 #include "hitable.h"
 #include "hitable_list.h"
 #include "camera.h"
-#include "lambertian.h"
-#include "metal.h"
-#include "dielectric.h"
 
 #define MAX_FLOAT 200.0
 
@@ -57,12 +54,15 @@ int main(){
     hitable *list[4];
 
     list[3] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.1,0.1,0.8)));
-    list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.1,0.8,0.1)));
+    list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.4,0.8,0.1)));
     list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.6,0.2,0.2), 0.0));
     list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
     hitable *world = new hitable_list(list, 4);
 
-    camera cam(vec3(-1,0.5,1.5), vec3(0,0,-1), vec3(0,1,0), 90, float(nx) / ny);
+    vec3 from(-1,1,4), to(0,0,-1);
+    float ap = 2;
+    float focus_dist = (from - to).length();
+    camera cam(from, to, vec3(0,1,0), 90, float(nx) / ny, ap, focus_dist);
     int i=0;
 //    #pragma omp parallel for
     for(int j = ny-1; j >= 0; j--){
