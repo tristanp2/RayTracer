@@ -9,6 +9,7 @@
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
+#include "plane.h"
 #include "hitable.h"
 #include "hitable_list.h"
 #include "camera.h"
@@ -77,14 +78,15 @@ int main(){
     srand48(time(0));
 
     rgba8* pixels = new rgba8[nx*ny];
-/*    hitable *list[4];
+    hitable *list[4];
     list[3] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.1,0.1,0.8)));
-    list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.4,0.8,0.1)));
+    list[1] = new plane(vec3(0,-0.5,0), vec3(1,0,0), vec3(0,1,0), 10,10, new lambertian(vec3(0.5,0.5,0.5)));
     list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.6,0.2,0.2), 0.0));
-    list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));*/
-    hitable *world = random_scene(10);
+    list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
+    hitable* world = new hitable_list(list, 4);
+//    hitable *world = random_scene(10);
 
-    vec3 from(-1,1,4), to(0,0,-1);
+    vec3 from(-1,1,2), to(0,0,-1);
     float ap = 0;
     float focus_dist = (from - to).length();
     camera cam(from, to, vec3(0,1,0), 90, float(nx) / ny, ap, focus_dist);
@@ -105,5 +107,6 @@ int main(){
         }
     }
     stbi_write_png("img.png", nx, ny, 4, pixels, nx * 4);
-    system("gimp img.png");
+    //system("gimp img.png");
+    system("open img.png");
 }
