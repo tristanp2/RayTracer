@@ -80,7 +80,7 @@ int main(){
     rgba8* pixels = new rgba8[nx*ny];
     hitable *list[4];
     list[3] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.1,0.1,0.8)));
-    list[1] = new plane(vec3(0,-0.5,0), vec3(1,0,0), vec3(0,1,0), 10,10, new lambertian(vec3(0.5,0.5,0.5)));
+    list[1] = new plane(vec3(0,-0.5,0), vec3(0,1,0), new lambertian(vec3(0.5,0.5,0.5)));
     list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.6,0.2,0.2), 0.0));
     list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
     hitable* world = new hitable_list(list, 4);
