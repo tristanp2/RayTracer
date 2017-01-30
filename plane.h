@@ -1,6 +1,7 @@
 #ifndef PLANEH
 #define PLANEH
 
+//defines an infinite plane
 class plane: public hitable{
 public:
     vec3 n;              //normal vector
