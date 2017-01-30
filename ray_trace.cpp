@@ -45,26 +45,50 @@ vec3 colour(const ray& r, hitable* world, int depth){
         return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.1, 0.2, 1.0);
     }
 }
+hitable* random_scene(int max_dist){
+    int list_size = drand48() * max_dist;
+    cout<<list_size<<endl;
+    float max_radius = 1.5;
+    hitable** list = new hitable*[list_size];
+    vec3 world_center(0,0,0);
+    for(int i=0; i<list_size; i++){
+        int choice = drand48() * 3.99;
+        vec3 offset = vec3(max_dist*drand48(), max_dist*drand48(), max_dist*drand48());
+        switch(choice){
+            case 2: //metal
+                list[i] = new sphere(offset + world_center, max_radius*drand48(), new metal(vec3(drand48(), drand48(), drand48()), drand48()));
+                break;
+            case 3: //dielectric
+                list[i] = new sphere(offset + world_center, max_radius*drand48(), new dielectric(drand48() * 4));
+                break;
+            default://diffuse
+                list[i] = new sphere(offset + world_center, max_radius*drand48(), new lambertian(vec3(drand48(), drand48(), drand48())));
+                break;
+        }
+    }
+    return new hitable_list(list, list_size);
+}
+
+
 int main(){
     int nx = 400;
     int ny = 200;
     int ns = 100; //num samples?
+    srand48(time(0));
 
     rgba8* pixels = new rgba8[nx*ny];
-    hitable *list[4];
-
+/*    hitable *list[4];
     list[3] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.1,0.1,0.8)));
     list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.4,0.8,0.1)));
     list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.6,0.2,0.2), 0.0));
-    list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
-    hitable *world = new hitable_list(list, 4);
+    list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));*/
+    hitable *world = random_scene(10);
 
     vec3 from(-1,1,4), to(0,0,-1);
-    float ap = 2;
+    float ap = 0;
     float focus_dist = (from - to).length();
     camera cam(from, to, vec3(0,1,0), 90, float(nx) / ny, ap, focus_dist);
     int i=0;
-//    #pragma omp parallel for
     for(int j = ny-1; j >= 0; j--){
         for(i=0; i < nx; i++){
             vec3 col(0,0,0);
@@ -80,7 +104,6 @@ int main(){
             pixels[(ny - 1 - j) * nx + i] = rgba8(col);
         }
     }
-    std::cout<<std::endl;
     stbi_write_png("img.png", nx, ny, 4, pixels, nx * 4);
     system("gimp img.png");
 }
