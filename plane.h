@@ -14,11 +14,13 @@ public:
         n = unit_vector(normal);
     }
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const{
-        float t = dot(n, center - r.origin()) / dot(n, r.direction());
-        vec3 p = r.point_at_parameter(t); 
+        float denom = dot(r.direction(), n);
         
-        if(t < 0)
+        if(denom < 0)
             return false;
+
+        float t = dot(center - r.origin(), n) / denom;
+        vec3 p = r.point_at_parameter(t); 
 
         rec.t = t;
         rec.p = p;

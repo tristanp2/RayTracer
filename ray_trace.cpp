@@ -10,6 +10,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "plane.h"
+#include "rectangle.h"
 #include "hitable.h"
 #include "hitable_list.h"
 #include "camera.h"
@@ -43,7 +44,7 @@ vec3 colour(const ray& r, hitable* world, int depth){
     else{
         vec3 unit_direction = unit_vector(r.direction());
         float t = 0.5*(unit_direction.y() + 1.0);
-        return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.1, 0.2, 1.0);
+        return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.6, 0.6, 0.7);
     }
 }
 hitable* random_scene(int max_dist){
@@ -79,9 +80,10 @@ int main(){
 
     rgba8* pixels = new rgba8[nx*ny];
     hitable *list[4];
-    list[3] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.1,0.1,0.8)));
-    list[1] = new plane(vec3(0,-0.5,0), vec3(0,1,0), new lambertian(vec3(0.5,0.5,0.5)));
-    list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.6,0.2,0.2), 0.0));
+    list[3] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.4,0.4,0.8)));
+    list[1] = new xzrect(vec3(0,-0.5,0), 10, 50, new lambertian(vec3(0.8,0.6,0.6)));
+   // list[1] = new sphere(vec3(0,-100.5,-1), 100, new metal(vec3(drand48(),drand48(),drand48()), 0));
+    list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.4,0.6,0.2), 0.0));
     list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
     hitable* world = new hitable_list(list, 4);
 //    hitable *world = random_scene(10);
@@ -97,10 +99,10 @@ int main(){
             for(int s=0; s < ns; s++){
                 float u = float(i + drand48()) / float(nx); //drand48 returns rand float in range [0.0, 1.0]
                 float v = float(j + drand48()) / float(ny);
-               
                 ray r = cam.get_ray(u,v);
                 col += colour(r, world, 0);
             }
+            printf("\rProgress: %.2f   ",  (i + (ny - j - 1)*nx)*100 / float(nx*ny)); 
             col /= float(ns);
             col = vec3(sqrt(col.e[0]),sqrt(col.e[1]),sqrt(col.e[2]));
             pixels[(ny - 1 - j) * nx + i] = rgba8(col);
