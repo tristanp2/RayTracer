@@ -34,17 +34,18 @@ vec3 colour(const ray& r, hitable* world, int depth){
     if(world->hit(r, 0.001, MAX_FLOAT, rec)){
         vec3 attenuation;
         ray scattered;
+        vec3 emitted = rec.mat_ptr->emitted();
         if(depth < 50 and rec.mat_ptr->scatter(r, rec, attenuation, scattered)){
-            return attenuation * colour(scattered, world, depth+1);
+            return emitted + attenuation * colour(scattered, world, depth+1);
         }
         else{
-            return vec3(0,0,0);
+            return emitted;
         }
     }
     else{
         vec3 unit_direction = unit_vector(r.direction());
         float t = 0.5*(unit_direction.y() + 1.0);
-        return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.6, 0.6, 0.7);
+        return vec3(0.1, 0.1, 0.1);
     }
 }
 hitable* random_scene(int max_dist){
@@ -79,13 +80,18 @@ int main(){
     srand48(time(0));
 
     rgba8* pixels = new rgba8[nx*ny];
-    hitable *list[4];
-    list[3] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.4,0.4,0.8)));
-    list[1] = new xzrect(vec3(0,-0.5,0), 10, 50, new lambertian(vec3(0.8,0.6,0.6)));
+    hitable *list[9];
+    list[3] = new sphere(vec3(0,0.5,-1), 0.5, new lambertian(vec3(0.4,0.4,0.8)));
    // list[1] = new sphere(vec3(0,-100.5,-1), 100, new metal(vec3(drand48(),drand48(),drand48()), 0));
-    list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.4,0.6,0.2), 0.0));
-    list[0] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
-    hitable* world = new hitable_list(list, 4);
+    list[2] = new sphere(vec3(1,0.5,-1), 0.5, new metal(vec3(0.4,0.6,0.2), 0.0));
+    list[0] = new sphere(vec3(-1,0.5,-1), 0.5, new dielectric(1.5));
+    list[1] = new xzrect(vec3(0,0,0), 10, 20, new lambertian(vec3(0.8,0.8,0.8)));  //bottom
+    list[4] = new yzrect(vec3(-5,5,0), 10, 20, new metal(vec3(1,0.8,0.8),0)); //left wall
+    list[6] = new yzrect(vec3(5,5,0), 10, 20, new lambertian(vec3(0.8,1,0.8)));  //right wall
+    list[5] = new xyrect(vec3(0,5,-10), 10, 10, new lambertian(vec3(1,0.8,0.8)));//back
+    list[7] = new xzrect(vec3(0,10,0), 10, 20, new diffuse_light(vec3(1,1,1)));//top
+    list[8] = new yzrect(vec3(4.5,2,-1), 2, 2, new diffuse_light(vec3(1,1,1)));//light
+    hitable* world = new hitable_list(list, 9);
 //    hitable *world = random_scene(10);
 
     vec3 from(-1,1,2), to(0,0,-1);
@@ -108,6 +114,7 @@ int main(){
             pixels[(ny - 1 - j) * nx + i] = rgba8(col);
         }
     }
+    cout<<endl;
     stbi_write_png("img.png", nx, ny, 4, pixels, nx * 4);
     //system("gimp img.png");
     system("open img.png");

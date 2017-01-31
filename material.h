@@ -9,7 +9,7 @@
 class material{
 public:
     virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const = 0;
-    virtual vec3 emitted(float u, float v, const vec3& p){
+    virtual vec3 emitted(){
         return vec3(0,0,0);
     }
 };
@@ -47,10 +47,13 @@ public:
     diffuse_light(vec3 colour){
         this->colour = colour;
     }
-    virtual vec3(float u, float v, const vec3& p){
+    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const {
+        return false;
+    }
+    virtual vec3 emitted(){
         return colour;
     }
-}
+};
 class dielectric: public material{
 public:
     float ref_index;
