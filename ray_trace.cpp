@@ -43,9 +43,7 @@ vec3 colour(const ray& r, hitable* world, int depth){
         }
     }
     else{
-        vec3 unit_direction = unit_vector(r.direction());
-        float t = 0.5*(unit_direction.y() + 1.0);
-        return vec3(0.1, 0.1, 0.1);
+        return vec3(0.2, 0.2, 0.2);
     }
 }
 hitable* random_scene(int max_dist){
@@ -82,15 +80,14 @@ int main(){
     rgba8* pixels = new rgba8[nx*ny];
     hitable *list[9];
     list[3] = new sphere(vec3(0,0.5,-1), 0.5, new lambertian(vec3(0.4,0.4,0.8)));
-   // list[1] = new sphere(vec3(0,-100.5,-1), 100, new metal(vec3(drand48(),drand48(),drand48()), 0));
     list[2] = new sphere(vec3(1,0.5,-1), 0.5, new metal(vec3(0.4,0.6,0.2), 0.0));
     list[0] = new sphere(vec3(-1,0.5,-1), 0.5, new dielectric(1.5));
-    list[1] = new xzrect(vec3(0,0,0), 10, 20, new lambertian(vec3(0.8,0.8,0.8)));  //bottom
-    list[4] = new yzrect(vec3(-5,5,0), 10, 20, new metal(vec3(1,0.8,0.8),0)); //left wall
-    list[6] = new yzrect(vec3(5,5,0), 10, 20, new lambertian(vec3(0.8,1,0.8)));  //right wall
-    list[5] = new xyrect(vec3(0,5,-10), 10, 10, new lambertian(vec3(1,0.8,0.8)));//back
-    list[7] = new xzrect(vec3(0,10,0), 10, 20, new diffuse_light(vec3(1,1,1)));//top
-    list[8] = new yzrect(vec3(4.5,2,-1), 2, 2, new diffuse_light(vec3(1,1,1)));//light
+    list[1] = new xzrect(vec3(0,0,0), 10, 20, new lambertian(vec3(0.4,0.4,0.4)));  //bottom
+    list[4] = new yzrect(vec3(-5,2.5,0), 5, 20, new lambertian(vec3(0.8,0.4,0.4))); //left wall
+    list[6] = new yzrect(vec3(5,2.5,0), 5, 20, new lambertian(vec3(0.4,0.8,0.4)));  //right wall
+    list[5] = new xyrect(vec3(0,2.5,-10), 10, 5, new lambertian(vec3(0.8,0.8,0.4)));//back
+    list[7] = new xzrect(vec3(0,5,0), 10, 20, new diffuse_light(vec3(1,1,1)));//top
+    list[8] = new yzrect(vec3(2,2,1), 1, 2, new diffuse_light(vec3(1,1,1)));//light
     hitable* world = new hitable_list(list, 9);
 //    hitable *world = random_scene(10);
 
